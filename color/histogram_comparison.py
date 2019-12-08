@@ -7,7 +7,7 @@ import heapq
 
 HISTOGRAM_JSON = "../data/histograms/videos.json"
 HISTOGRAMS = "../data/histograms/videos.npy"
-SL_SIZE = 15
+SL_SIZE = 1
 NUM_VIDEOS = 7
 
 def compare_frames(query_frames, video_frames):
