@@ -63,4 +63,8 @@ def get_wavs_scores_for_query(file_path):
 				# Append euclidean norm
 				wav_scores[file].append(float(euclidean_norm))
 
+	# Interpolate 2nd to last value as last one
+	for file in AUDIO_FILES:
+		wav_scores[file].append(wav_scores[file][-1])
+
 	return wav_scores
