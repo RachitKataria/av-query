@@ -13,6 +13,10 @@ num_ranked_files = 3
 audio_files = np.array(["sports", "movie", "interview", "StarCraft", "musicvideo", "flowers", "traffic"])
 
 # Get query video from command line 
+if len(sys.argv) < 2:
+	print("Please enter a query filename")
+	sys.exit(0)
+
 query_file = sys.argv[1]
 yQuery, srQuery = librosa.load('query/' + query_file)
 
