@@ -27,6 +27,12 @@ def read_video(path):
 
     for f in rgbs:
         with open(f, 'rb') as file:
+
+            # Don't use unless using .rgb files converted from png's gathered from youtube video using vlc
+            # reds.append(np.flip(np.roll(np.asarray(Image.frombytes('L', (352, 288), file.read(352*288), 'raw')), -160), axis=0))
+            # greens.append(np.flip(np.roll(np.asarray(Image.frombytes('L', (352, 288), file.read(352*288), 'raw')), -160), axis=0))
+            # blues.append(np.flip(np.roll(np.asarray(Image.frombytes('L', (352, 288), file.read(352*288), 'raw')), -160), axis=0))
+
             reds.append(np.asarray(Image.frombytes('L', (352, 288), file.read(352*288), 'raw')))
             greens.append(np.asarray(Image.frombytes('L', (352, 288), file.read(352*288), 'raw')))
             blues.append(np.asarray(Image.frombytes('L', (352, 288), file.read(352*288), 'raw')))
@@ -47,7 +53,7 @@ def sanity_check(img, img_yuv):
     v_mapped = cv2.LUT(v, lut_v)
 
     result = np.vstack([img, y, u_mapped, v_mapped])
-    cv2.imwrite('shed_combo.png', result)
+    cv2.imwrite('shed_combo.png', img)
 
 def main():
     vids = []
@@ -65,30 +71,39 @@ def main():
     features = []
     video_count = 0
 
-    # sanity_check(vids[6][100], cv2.cvtColor(vids[6][100], cv2.COLOR_BGR2YUV))
+    # sanity_check(vids[4][100], cv2.cvtColor(vids[4][100], cv2.COLOR_BGR2YUV))
 
     for vid in vids:
         frame_count = 0
+        video = []
         for frame in vid:
+            frame_feature = []
             img_yuv = cv2.cvtColor(frame, cv2.COLOR_BGR2YUV)
-            sanity_check(frame, img_yuv)
+            # sanity_check(frame, img_yuv)
             chans = cv2.split(img_yuv)
             colors = ("b", "g", "r")
 
             for (chan, color) in zip(chans, colors):
                 hist = cv2.calcHist([chan], [0], None, [256], [0, 256])
-                features.extend(hist)
-                plt.plot(hist, color=color)
-
-            plt.show()
+                frame_feature.append(hist)
 
             frame_count += 1
             if frame_count % 100 == 0:
                 print("Done with {} frames of {}".format(frame_count, vid_names[video_count]))
-            break
+            video.append(frame_feature)
 
+        features.append(video)
         video_count += 1
 
+    np.save("videos", np.asarray(features))
                 
 if __name__ == '__main__':
     main()
+
+    # Don't use unless using .rgb files converted from png's gathered from youtube video using vlc
+    # query_frames = read_video("../data/query/third_rgb")
+    # query_frames = np.asarray(query_frames)
+    # query_frames = np.flip(query_frames, 3)
+    # sanity_check(query_frames[100], cv2.cvtColor(query_frames[100], cv2.COLOR_BGR2YUV))
+
+
