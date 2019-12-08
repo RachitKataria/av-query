@@ -9,27 +9,31 @@ import os
 
 DATA_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data/')
 
-def get_ranked_wavs_for_query(file_path):
+# Local wav files
+AUDIO_FILES = np.array(["sports", "movie", "interview", "StarCraft", "musicvideo", "flowers", "traffic"])
+
+# Frames per second
+FPS = 30
+
+# Frames per sliding window
+SLIDING_WINDOW_FRAMES = FPS // 2
+
+def get_wavs_scores_for_query(file_path):
 	# Number of ranked files to return
 	num_ranked_files = 3
 
-	#Loading audio files
-	audio_files = np.array(["sports", "movie", "interview", "StarCraft", "musicvideo", "flowers", "traffic"])
 	yQuery, srQuery = librosa.load(file_path)
+	
+	# Samples per frame and sample offset
+	samples_per_frame = srQuery // FPS
+	sliding_sample_offset = samples_per_frame * SLIDING_WINDOW_FRAMES 
 
-	# Frames per second
-	fps = 30
+	# Get MFCC for query once
+	mfccQuery = librosa.feature.mfcc(yQuery, srQuery) 
 
-	# Frames per sliding window
-	sliding_window_frames = fps // 2
-	samples_per_frame = srQuery // fps
-	sliding_sample_offset = samples_per_frame * sliding_window_frames 
+	wav_scores = {}
 
-	# Overall min distances and seconds
-	overall_distances = []
-	overall_seconds = []
-
-	for file in audio_files:
+	for file in AUDIO_FILES:
 		with open(DATA_FOLDER + file + '.json') as audio_json:
 			data = json.load(audio_json)
 
@@ -43,42 +47,20 @@ def get_ranked_wavs_for_query(file_path):
 			# Ending point for final slice
 			ending_point = len(yWav) - len(yQuery)
 
-			min_dist = sys.float_info.max
-			min_seconds = 0
+			# Create array for wav_scores
+			wav_scores[file] = []
 
 			while starting_point <= ending_point:
 				yWavWindow = yWav[starting_point: starting_point + len(yQuery)]
-
-				mfcc1 = librosa.feature.mfcc(yWavWindow, srWav) # Computing MFCC values
-				mfcc2 = librosa.feature.mfcc(yQuery, srQuery)
+ 
+				# Compute MFCC values for wav file
+				mfccWav = librosa.feature.mfcc(yWavWindow, srWav)
 
 				# Calculate euclidean distance
-				euclidean_norm = np.linalg.norm(mfcc1.T - mfcc2.T)
-
-				if euclidean_norm < min_dist:
-					min_dist = euclidean_norm
-					min_seconds = starting_point / srQuery
-
+				euclidean_norm = np.linalg.norm(mfccWav - mfccQuery)
 				starting_point += sliding_sample_offset
 
-			# print("File name: ", file)
-			# print("Minimum distance: ", min_dist)
-			# print("Minimum seconds: ", min_seconds)
+				# Append euclidean norm
+				wav_scores[file].append(float(euclidean_norm))
 
-			overall_distances.append(min_dist)
-			overall_seconds.append(min_seconds)
-
-	# Convert to arrays
-	audio_files = np.asarray(audio_files)
-	overall_distances = np.asarray(overall_distances)
-	overall_seconds = np.asarray(overall_seconds)
-	sorted_indices = np.argsort(overall_distances)
-
-	# # New line
-	# print('\n')
-	# print("Ranked List of Matches")
-	# print(audio_files[sorted_indices][:num_ranked_files])
-	# print(overall_distances[sorted_indices][:num_ranked_files])
-	# print(overall_seconds[sorted_indices][:num_ranked_files])
-
-	return audio_files[sorted_indices][:num_ranked_files], overall_distances[sorted_indices][:num_ranked_files], overall_seconds[sorted_indices][:num_ranked_files]
+	return wav_scores

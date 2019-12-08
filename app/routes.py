@@ -7,7 +7,6 @@ QUERY_FOLDER = os.path.join(app.root_path, '../audio/mfcc/data')
 
 @app.route('/')
 @app.route('/index')
-
 def index():
 	return "Hello, World!"
 
@@ -18,5 +17,5 @@ def audio():
 		filename = request.get_json()['filename']
 		file_path = os.path.join(app.root_path, '../audio/mfcc/query', filename)
 		# Retrieve ranked wavs for query
-		audio_files, distances, seconds = mfcc.get_ranked_wavs_for_query(file_path)
-		return jsonify(audio_files=audio_files.tolist(), distances=distances.tolist(), seconds=seconds.tolist())
+		wav_scores = mfcc.get_wavs_scores_for_query(file_path)
+		return jsonify(wav_scores=wav_scores)
