@@ -26,5 +26,5 @@ if __name__ == '__main__':
 	print "From second query we recognized: %s\n" % songs
 
 	# Recognize third query
-	songs = djv.recognize(FileRecognizer, "query/harden.wav")
+	songs = djv.recognize(FileRecognizer, "query/ellen.wav")
 	print "From third query we recognized: %s\n" % songs
