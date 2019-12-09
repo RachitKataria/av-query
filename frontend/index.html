@@ -12,6 +12,14 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="">
     <title>AV-Query</title>
+
+    <!-- Custom Video JS -->
+    <head>
+        <link href="https://vjs.zencdn.net/7.5.5/video-js.css" rel="stylesheet" />
+
+        <!-- If you'd like to support IE8 (for Video.js versions prior to v7) -->
+        <script src="https://vjs.zencdn.net/ie8/1.1.2/videojs-ie8.min.js"></script>
+    </head>
 </head>
 <body>
     <div id="query">
@@ -37,6 +45,28 @@
     </div>
 
     <div id="query-video">
+        <video
+            id="my-video"
+            class="video-js"
+            controls
+            preload="auto"
+            width="352"
+            height="288"
+            data-setup="{}"
+        >
+            <source src="out.mp4" type="video/mp4" />
+        </video>
+        <video
+            id="my-video"
+            class="video-js"
+            controls
+            preload="auto"
+            width="352"
+            height="288"
+            data-setup="{}"
+        >
+            <source src="out.mp4" type="video/mp4" />
+        </video>
     </div>
 
     <div id="matched-video">
@@ -49,16 +79,6 @@
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@cycjimmy/h5-video-player@2/build/h5-video-player.min.js"></script>
-    <script>
-        var source = 'out.mp4';
-        var video = new H5VideoPlayer(source, {
-            context: '#query-video',
-            control: true,
-            autoClose: false,
-            preload: true,
-            orientation: 'landscape',
-        }).load();
-    </script>
+    <script src="https://vjs.zencdn.net/7.5.5/video.js"></script>
 </body>
 </html>
