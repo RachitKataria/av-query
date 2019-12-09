@@ -5,6 +5,7 @@ from flask import request, jsonify
 from audio.mfcc import mfcc
 from edge_detection import detect
 from color import histogram_comparison
+from color import rgb_to_png
 
 QUERY_FOLDER = os.path.join(app.root_path, '../audio/mfcc/data')
 
@@ -29,8 +30,11 @@ def convert_to_mp4():
         # Get query directory and file path
         filename = request.get_json()['filename']
         file_path = os.path.join(app.root_path, '../data/query', filename)
-        file_path += "/*.png"
-        ffmpeg.input(file_path, pattern_type='glob', framerate=30).output('query.mp4').run()
+        dest_path = os.path.join(app.root_path, '../data/query', filename+"_png")
+        rgb_to_png.convert(file_path, dest_path)
+        dest_path += "/*.png"
+        ffmpeg.input(dest_path, pattern_type='glob', framerate=30).output('query.mp4').overwrite_output().run()
+        return jsonify({})
 
 @app.route('/color', methods=['POST'])
 def color():
