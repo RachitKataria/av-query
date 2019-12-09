@@ -27,14 +27,10 @@
             </div>
         </form>
     </div>
-    <div id="matched-videos">
+    <div id="matched-videos" style="margin: 0 auto; width: 100px;">
         <div class="row">
             <div class=".col-md-6">
-                <ul class="list-group">
-                    <li class="list-group-item" id="video3">Flowers.rgb <span class="score" id="score1">100%</span></li>
-                    <li class="list-group-item" id="video3">Cars.rgb <span class="score" id="score2">80%</span></li>
-                    <li class="list-group-item" id="video3">Movie.rgb <span class="score" id="score3">70%</span></li>
-                </ul>
+                <table id="matched-videos-group"></table>
             </div>
         </div>
     </div>
@@ -171,7 +167,28 @@
             // Calculate ranked scores for top three 
             final_scores = calculate_cum_scores(wav_scores[0], edge_scores[0], color_scores[0]);
             ranked_files = get_top_ranked_files(final_scores);
-            ranked_scores = convert_dist_to_scores(ranked_files);
+            ranked_scores = convert_dist_to_scores(ranked_files); // dict with file --> scores in sorted order
+
+            // Add top matches to dom
+            var table = document.getElementById("matched-videos-group");
+            for (var filename in ranked_scores) {
+
+                // Add table row to DOM
+                var tr = document.createElement('tr');
+                table.appendChild(tr);
+
+                // Add th filename to DOM
+                var th_filename = document.createElement('th');
+                tr.appendChild(th_filename);
+                th_filename.innerHTML = filename;
+                th_filename.setAttribute("style", "list-style-position: inside;");
+
+                // Add th score to DOM
+                var th_score = document.createElement('th');
+                tr.appendChild(th_score);
+                th_score.innerHTML = (Math.max(...ranked_scores[filename])*100).toFixed(2);
+                th_score.setAttribute("style", "list-style-position: inside;");
+            }
 
             // Create query mp4
             query_filepath = "../data/query/" + filename + "/" + filename + ".mp4";
