@@ -1,5 +1,5 @@
 venv*
-.DS_STORE
+.DS_Store
 .python-version
 __pycache__/
 .idea/

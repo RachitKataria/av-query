@@ -19,7 +19,7 @@ def audio():
 		file_path = os.path.join(app.root_path, '../audio/mfcc/query', filename)
 		# Retrieve ranked wavs for query
 		wav_scores = mfcc.get_wavs_scores_for_query(file_path)
-		return jsonify(scores=wav_scores)
+		return jsonify(wav_scores)
 
 @app.route('/edge_detection', methods=['POST'])
 def edge_detection():
