@@ -30,21 +30,13 @@ def convert_to_mp4():
     if request.method == 'POST':
         # Get query directory
         filename = request.get_json()['filename']
-
-        # Construct full file path and destination for pngs
         file_path = os.path.join(app.root_path, '../data/query', filename)
-        dest_path = os.path.join(app.root_path, '../data/query', filename+"_png")
-
-        # Convert .rgb to .png
-        rgb_to_png.convert(file_path, dest_path)
-        dest_path += "/*.png"
-
-        # Create video and audio sources using ffmpeg
-        # and combine into "query.mp4"
-        video = ffmpeg.input(dest_path, pattern_type='glob', framerate=30)
-        audio = ffmpeg.input(file_path+'/' + filename + '.wav')
-        ffmpeg.output(video, audio, 'query.mp4').overwrite_output().run()
-
+        read_video = rgb_to_png.read_video(file_path)
+        imageio.mimwrite(f'{file_path}/{query}NoAudio.mp4', read_video, fps=30)
+        video = ffmpeg.input(f'{file_path}/{query}NoAudio.mp4')
+        audio = ffmpeg.input(f'{file_path}/{query}.wav')
+        ffmpeg.output(video, audio, f'{file_path}/{query}.mp4').overwrite_output().run()
+        os.remove(f'{file_path}/{query}NoAudio.mp4')
         return jsonify({})
 
 @app.route('/color', methods=['POST'])
