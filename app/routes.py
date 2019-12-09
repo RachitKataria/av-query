@@ -1,4 +1,5 @@
 import os
+import ffmpeg
 from app import app
 from flask import request, jsonify
 from audio.mfcc import mfcc
@@ -19,3 +20,20 @@ def audio():
 		# Retrieve ranked wavs for query
 		wav_scores = mfcc.get_wavs_scores_for_query(file_path)
 		return jsonify(scores=wav_scores)
+
+@app.route('/convert_to_mp4', methods=['POST'])
+def convert_to_mp4():
+    if request.method == 'POST':
+        # Get query directory and file path
+        filename = request.get_json()['filename']
+        file_path = os.path.join(app.root_path, '../data/query', filename)
+        file_path += "/*.png"
+        ffmpeg.input(file_path, pattern_type='glob', framerate=30).output('query.mp4').run()
+
+@app.route('/color', methods=['POST'])
+def color():
+    if request.method == 'POST':
+        # Get query directory and file path
+        filename = request.get_json()['filename']
+        file_path = os.path.join(app.root_path, '../data/query', filename)
+
