@@ -3,3 +3,5 @@ matplotlib
 numpy
 flask
 python-dotenv
+pillow
+opencv-python

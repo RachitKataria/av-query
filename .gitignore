@@ -3,5 +3,5 @@ venv*
 .python-version
 __pycache__/
 .idea/
-edge_detection/cache/*
-edge_detection/edges/*
+edge_detection/cache*
+edge_detection/edges*

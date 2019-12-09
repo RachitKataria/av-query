@@ -7,37 +7,15 @@ import shutil
 import sys
 from PIL import Image
 
-CACHE = './cache'
-EDGES = './edges'
-VIDEO_DB = '../data/database_videos'
+CACHE = './edge_detection/cache'
+EDGES = './edge_detection/edges'
+VIDEO_DB = './data/database_videos'
 VIDEO_DB_FRAMES = 600
 VIDEO_QUERY_FRAMES = 150
 VIDEO_WIDTH = 352
 VIDEO_HEIGHT = 288
 VIDEO_CHANNELS = 3
 CANNY_SIGMA = 0.15
-
-
-# Singleton helper
-class CannyEdges(object):
-    __instance = None
-
-    @staticmethod
-    def get_instance():
-        """ Static access method. """
-        if CannyEdges.__instance is None:
-            CannyEdges()
-        return CannyEdges.__instance.edges, CannyEdges.__instance.video_to_index
-
-    def __init__(self):
-        """ Singleton constructor. """
-        if CannyEdges.__instance is not None:
-            raise Exception("This class is a singleton! Do not instantiate it twice!")
-        else:
-            with open(f'{CACHE}/video_to_index.json') as file:
-                self.video_to_index = json.load(file)
-            self.edges = np.load(f'{EDGES}/edges.npy')
-            CannyEdges.__instance = self
 
 
 def fast_load_video(path, videos, video_idx):
@@ -103,7 +81,9 @@ def offline_processing_canny_edge_detection(videos, video_to_index, sigma=CANNY_
     for k, v in video_to_index.items():
         # k: Video Name, v: Index in videos
         print(f'Detecting edges in video {k}')
-        os.mkdir(f'{EDGES}/{k}')
+
+        if visualize:
+            os.mkdir(f'{EDGES}/{k}')
 
         for frame in range(VIDEO_DB_FRAMES):
             # Perform pre-steps (RGB->GRAY, Gaussian Blur)
@@ -172,7 +152,7 @@ def load_query_edges(query_path, sigma=CANNY_SIGMA, visualize=False):
 
 
 def online_processing(query_path):
-    edges, video_to_index = CannyEdges.get_instance()
+    edges, video_to_index = load_canny_edges()
     query_edges = load_query_edges(query_path, visualize=False)
 
     # Sliding window configuration below
@@ -185,13 +165,14 @@ def online_processing(query_path):
         for i in range(0, edges[v].shape[0] - sw_size + 1, sw_jump):
             sw_ranker[k].append(
                 np.linalg.norm(edges[v][i:i + sw_size].astype(np.int16) - query_edges.astype(np.int16)))
-    return {"scores": sw_ranker}
+    return sw_ranker
 
 
 def main():
     # videos, video_to_index = fast_load_db(VIDEO_DB)
-    # offline_processing_canny_edge_detection(videos, video_to_index, visualize=True)
-    online_processing(sys.argv[1])
+    # offline_processing_canny_edge_detection(videos, video_to_index)
+    # online_processing(sys.argv[1])
+    pass
 
 
 if __name__ == '__main__':
