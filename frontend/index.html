@@ -94,7 +94,7 @@
                 success: function(result) {
                     console.log(result)
                 }
-            })).then(function(wav_scores, edge_scores, color_scores) {
+            })).then(function(wav_scores, color_scores, edge_scores) {
 
             // Calculate ranked scores for top three 
             final_scores = calculate_cum_scores(wav_scores[0], edge_scores[0], color_scores[0]);
