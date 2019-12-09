@@ -4,6 +4,7 @@ from app import app
 from flask import request, jsonify
 from audio.mfcc import mfcc
 from edge_detection import detect
+from color import histogram_comparison
 
 QUERY_FOLDER = os.path.join(app.root_path, '../audio/mfcc/data')
 
@@ -34,9 +35,11 @@ def convert_to_mp4():
 @app.route('/color', methods=['POST'])
 def color():
     if request.method == 'POST':
-        # Get query directory and file path
-        filename = request.get_json()['filename']
-        file_path = os.path.join(app.root_path, '../data/query', filename)		
+        return jsonify(
+            histogram_comparison.get_matches(
+                os.path.join(app.root_path, '../data/query', request.get_json()['filename']),
+            ),
+        )	
 
 @app.route('/edge_detection', methods=['POST'])
 def edge_detection():

@@ -1,14 +1,38 @@
-from color_histogram import read_video
 import numpy as np
 import json
 import sys
 import cv2
 import heapq
+import glob
+from PIL import Image
 
 HISTOGRAM_JSON = "../data/histograms/videos.json"
 HISTOGRAMS = "../data/histograms/videos.npy"
-SL_SIZE = 1
+SL_SIZE = 15
 NUM_VIDEOS = 7
+
+def read_video(path):
+    rgbs = glob.glob(f'{path}/*.rgb')
+    rgbs.sort()
+
+    reds = []
+    greens = []
+    blues = []
+
+    for f in rgbs:
+        with open(f, 'rb') as file:
+
+            # Don't use unless using .rgb files converted from png's gathered from youtube video using vlc
+            # reds.append(np.flip(np.roll(np.asarray(Image.frombytes('L', (352, 288), file.read(352*288), 'raw')), -160), axis=0))
+            # greens.append(np.flip(np.roll(np.asarray(Image.frombytes('L', (352, 288), file.read(352*288), 'raw')), -160), axis=0))
+            # blues.append(np.flip(np.roll(np.asarray(Image.frombytes('L', (352, 288), file.read(352*288), 'raw')), -160), axis=0))
+
+            reds.append(np.asarray(Image.frombytes('L', (352, 288), file.read(352*288), 'raw')))
+            greens.append(np.asarray(Image.frombytes('L', (352, 288), file.read(352*288), 'raw')))
+            blues.append(np.asarray(Image.frombytes('L', (352, 288), file.read(352*288), 'raw')))
+
+    frames = np.stack((np.asarray(reds), np.asarray(greens), np.asarray(blues)), axis=-1)
+    return frames
 
 def compare_frames(query_frames, video_frames):
 
@@ -26,9 +50,14 @@ def get_matches(query_dir):
     file = open(HISTOGRAM_JSON)
     hist_map = json.load(file)
     names = ["" for _ in range(NUM_VIDEOS)]
+    scores = {}
 
     for name, idx in hist_map.items():
         names[idx] = name
+        if name != "starcraft":
+            scores[name] = []
+        else:
+            scores["StarCraft"] = []
 
     # Get color histogram for each query frame
     query_frames = read_video(query_dir)
@@ -50,32 +79,34 @@ def get_matches(query_dir):
 
         video.append(frame_feature)
 
-    # Heap to store top k differences
-    heap = []
-
     # Get best videos
     for num, video_frames in enumerate(hists):
 
         best_diff = sys.maxsize
+        name = names[num]
+        if name == "starcraft":
+            name = "StarCraft"
 
-        for beg_idx in range(0, 450, SL_SIZE):
+        for beg_idx in range(0, 451, SL_SIZE):
             diff = compare_frames(video, video_frames[beg_idx:beg_idx+150])
-            if diff < best_diff:
-                best_diff = diff
+            scores[name].append(float(diff))
+            # if diff < best_diff:
+            #     best_diff = diff
 
-        print("Compared query with {}! Got a difference of {}".format(names[num], best_diff))
-        if len(heap) == 3:
-            if heap[0][1]*-1 > best_diff:
-                heapq.heappushpop(heap, (num, -1*best_diff))
-        else:
-            heapq.heappush(heap, (num, -1*best_diff))
+        # print("Compared query with {}! Got a difference of {}".format(names[num], best_diff))
+        # if len(heap) == 3:
+        #     if heap[0][1]*-1 > best_diff:
+        #         heapq.heappushpop(heap, (num, -1*best_diff))
+        # else:
+        #     heapq.heappush(heap, (num, -1*best_diff))
     
-    heap = sorted(heap, key=lambda x: -1*x[1])
-    return (names[heap[0][0]], names[heap[1][0]], names[heap[2][0]])
+    return scores
+    # heap = sorted(heap, key=lambda x: -1*x[1])
+    # return (names[heap[0][0]], names[heap[1][0]], names[heap[2][0]])
 
 if __name__ == "__main__":
     query_dir = sys.argv[1]
-    top_3_matches = get_matches(query_dir)
-    print(top_3_matches)
+    scores = get_matches(query_dir)
+    print(scores)
 
 
