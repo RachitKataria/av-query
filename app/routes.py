@@ -3,6 +3,7 @@ import ffmpeg
 from app import app
 from flask import request, jsonify
 from audio.mfcc import mfcc
+from edge_detection import detect
 
 QUERY_FOLDER = os.path.join(app.root_path, '../audio/mfcc/data')
 
@@ -19,7 +20,7 @@ def audio():
 		file_path = os.path.join(app.root_path, '../audio/mfcc/query', filename)
 		# Retrieve ranked wavs for query
 		wav_scores = mfcc.get_wavs_scores_for_query(file_path)
-		return jsonify(scores=wav_scores)
+		return jsonify(wav_scores)
 
 @app.route('/convert_to_mp4', methods=['POST'])
 def convert_to_mp4():
@@ -35,5 +36,13 @@ def color():
     if request.method == 'POST':
         # Get query directory and file path
         filename = request.get_json()['filename']
-        file_path = os.path.join(app.root_path, '../data/query', filename)
+        file_path = os.path.join(app.root_path, '../data/query', filename)		
 
+@app.route('/edge_detection', methods=['POST'])
+def edge_detection():
+	if request.method == 'POST':
+		return jsonify(
+			detect.online_processing(
+				os.path.join(app.root_path, request.get_json()['filename']),
+			),
+		)

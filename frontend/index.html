@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="">
+    <title>AV-Query</title>
+</head>
+<body>
+
+    <div id="query">
+        <form>
+            <div class="form-group">
+                <label for="query-file">Query</label>
+                <input type="text" class="form-control-file" id="query-file" placeholder="Directory containing query files">
+            </div>
+        </form>
+    </div>
+
+    <div id="matched-videos">
+        <div class="row">
+            <div class=".col-md-6">
+                <ul class="list-group">
+                    <li class="list-group-item" id="video3">Flowers.rgb <span class="score" id="score1">100%</span></li>
+                    <li class="list-group-item" id="video3">Cars.rgb <span class="score" id="score2">80%</span></li>
+                    <li class="list-group-item" id="video3">Movie.rgb <span class="score" id="score3">70%</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="query-video">
+        <div class="embed-responsive embed-responsive-4by3">
+            <iframe class="embed-responsive-item" src=""></iframe>
+        </div>
+    </div>
+
+    <div id="matched-video">
+        <div class="embed-responsive embed-responsive-4by3">
+            <iframe class="embed-responsive-item" src=""></iframe>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+</body>
+</html>
