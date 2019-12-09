@@ -171,7 +171,7 @@
 
             // Add top matches to dom
             var table = document.getElementById("matched-videos-group");
-            for (var filename in ranked_scores) {
+            for (var f in ranked_scores) {
 
                 // Add table row to DOM
                 var tr = document.createElement('tr');
@@ -180,18 +180,21 @@
                 // Add th filename to DOM
                 var th_filename = document.createElement('th');
                 tr.appendChild(th_filename);
-                th_filename.innerHTML = filename;
+                th_filename.innerHTML = f;
                 th_filename.setAttribute("style", "list-style-position: inside;");
 
                 // Add th score to DOM
                 var th_score = document.createElement('th');
                 tr.appendChild(th_score);
-                th_score.innerHTML = (Math.max(...ranked_scores[filename])*100).toFixed(2);
+                th_score.innerHTML = (Math.max(...ranked_scores[f]) * 100).toFixed(2);
                 th_score.setAttribute("style", "list-style-position: inside;");
             }
 
             // Create query mp4
             query_filepath = "../data/query/" + filename + "/" + filename + ".mp4";
+            db_filepath = "../data/database_videos/" + Object.keys(ranked_scores)[0] + "/" + Object.keys(ranked_scores)[0] + ".mp4"
+
+            console.log("FILENAME: ", filename);
             $.ajax({
                 data: JSON.stringify({ "filename": filename }),
                 contentType: 'application/json',
@@ -203,10 +206,11 @@
             }).then(function() {
                 // Update query video
                 var query_video = videojs('query-video');
-                query_video.src("../data/query/" + filename + "/" + filename + ".mp4");
+                query_video.src(query_filepath);
+
                 // Update match video
                 var match_video = videojs('match-video');
-                match_video.src("../data/database_videos/sports/sports.mp4");
+                match_video.src(db_filepath);
 
                 // Undisable slider
                 document.getElementById("myFrameSlider").disabled = false;
