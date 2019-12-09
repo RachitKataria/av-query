@@ -27,13 +27,23 @@ def audio():
 @app.route('/convert_to_mp4', methods=['POST'])
 def convert_to_mp4():
     if request.method == 'POST':
-        # Get query directory and file path
+        # Get query directory
         filename = request.get_json()['filename']
+
+        # Construct full file path and destination for pngs
         file_path = os.path.join(app.root_path, '../data/query', filename)
         dest_path = os.path.join(app.root_path, '../data/query', filename+"_png")
+
+        # Convert .rgb to .png
         rgb_to_png.convert(file_path, dest_path)
         dest_path += "/*.png"
-        ffmpeg.input(dest_path, pattern_type='glob', framerate=30).output('query.mp4').overwrite_output().run()
+
+        # Create video and audio sources using ffmpeg
+        # and combine into "query.mp4"
+        video = ffmpeg.input(dest_path, pattern_type='glob', framerate=30)
+        audio = ffmpeg.input(file_path+'/' + filename + '.wav')
+        ffmpeg.output(video, audio, 'query.mp4').overwrite_output().run()
+
         return jsonify({})
 
 @app.route('/color', methods=['POST'])
