@@ -1,5 +1,6 @@
 import os
 import ffmpeg
+import imageio
 from app import app
 from flask import request, jsonify
 from audio.mfcc import mfcc
@@ -32,11 +33,11 @@ def convert_to_mp4():
         filename = request.get_json()['filename']
         file_path = os.path.join(app.root_path, '../data/query', filename)
         read_video = rgb_to_png.read_video(file_path)
-        imageio.mimwrite(f'{file_path}/{query}NoAudio.mp4', read_video, fps=30)
-        video = ffmpeg.input(f'{file_path}/{query}NoAudio.mp4')
-        audio = ffmpeg.input(f'{file_path}/{query}.wav')
-        ffmpeg.output(video, audio, f'{file_path}/{query}.mp4').overwrite_output().run()
-        os.remove(f'{file_path}/{query}NoAudio.mp4')
+        imageio.mimwrite(f'{file_path}/{filename}NoAudio.mp4', read_video, fps=30)
+        video = ffmpeg.input(f'{file_path}/{filename}NoAudio.mp4')
+        audio = ffmpeg.input(f'{file_path}/{filename}.wav')
+        ffmpeg.output(video, audio, f'{file_path}/{filename}.mp4').overwrite_output().run()
+        os.remove(f'{file_path}/{filename}NoAudio.mp4')
         return jsonify({})
 
 @app.route('/color', methods=['POST'])
