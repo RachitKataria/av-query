@@ -68,6 +68,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <script src="https://vjs.zencdn.net/7.5.5/video.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+    <script src="calculate_scores.js"></script>
 
     <script>
         var slider = document.getElementById('myFrameSlider');
@@ -86,62 +87,42 @@
             slider.value = video.currentTime() * 30;
         });
     </script>
+
     <script>
-        helper = [
-            0.35781122120365116,
-            0.3788545040759598,
-            0.39103100741674435,
-            0.4038796628715906,
-            0.4219177976359687,
-            0.45406801156089094,
-            0.4817931988517644,
-            0.515401797793112,
-            1,
-            0.5290531219321039,
-            0.5073469567121657,
-            0.49587857044491945,
-            0.4872318599476778,
-            0.47947199285384035,
-            0.45974055408424286,
-            0.4329018640324922,
-            0.41471178737159886,
-            0.40882466024507,
-            0.4125294201582652,
-            0.41957429586765205,
-            0.42312583971466655,
-            0.43142477781032884,
-            0.435275150362726,
-            0.4334987144098901,
-            0.43185655116103205,
-            0.42954608118582804,
-            0.42955685357224616,
-            0.42770702607575783,
-            0.4227086815168666,
-            0.40896995988150553,
-            0.39740569864917685
-        ];
+        function display_hist(scores) {
 
-        // Set chart defaults for styling
-        Chart.defaults.global.legend.display = false;
-        Chart.defaults.scale.ticks.display = false;
-        Chart.defaults.scale.gridLines.display = false;
-        Chart.defaults.scale.gridLines.tickMarkLength = 0;
+            // Set chart defaults for styling
+            Chart.defaults.global.legend.display = false;
+            Chart.defaults.scale.ticks.display = false;
+            Chart.defaults.scale.gridLines.display = false;
+            Chart.defaults.scale.gridLines.tickMarkLength = 0;
 
-        var labels = Array.from(Array(31).keys())
-        var ctx = document.getElementById('myChart').getContext('2d');
-        var myChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    data: helper,
-                    fill: true,
-                    pointRadius: 0,
-                }],
-            },
-        });
-        myChart.canvas.parentNode.style.height = '100px';
-        myChart.canvas.parentNode.style.width = '352px';
+            var labels = Array.from(Array(31).keys())
+            var ctx = document.getElementById('myChart').getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: scores,
+                        fill: true,
+                        pointRadius: 0,
+                    }],
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                min: 0,
+                                max: 1,
+                            },
+                        }],
+                    },
+                },
+            });
+            myChart.canvas.parentNode.style.height = '100px';
+            myChart.canvas.parentNode.style.width = '352px';
+        }
     </script>
 
     <!-- On button click! -->
@@ -184,24 +165,27 @@
 
             // Add top matches to dom
             var table = document.getElementById("matched-videos-group");
-            for (var filename in ranked_scores) {
+            for (var f in ranked_scores) {
 
                 // Add table row to DOM
                 var tr = document.createElement('tr');
+                tr.onclick = function(fn) { return function() { display_hist(ranked_scores[fn]); } }(f);
                 table.appendChild(tr);
 
                 // Add th filename to DOM
                 var th_filename = document.createElement('th');
                 tr.appendChild(th_filename);
-                th_filename.innerHTML = filename;
+                th_filename.innerHTML = f;
                 th_filename.setAttribute("style", "list-style-position: inside;");
 
                 // Add th score to DOM
                 var th_score = document.createElement('th');
                 tr.appendChild(th_score);
-                th_score.innerHTML = (Math.max(...ranked_scores[filename])*100).toFixed(2);
+                th_score.innerHTML = (Math.max(...ranked_scores[f])*100).toFixed(2);
                 th_score.setAttribute("style", "list-style-position: inside;");
             }
+
+            display_hist(ranked_scores[Object.keys(ranked_scores)[0]]);
         });
     });
     </script>
