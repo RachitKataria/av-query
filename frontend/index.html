@@ -16,9 +16,6 @@
     <!-- Custom Video JS -->
     <head>
         <link href="https://vjs.zencdn.net/7.5.5/video-js.css" rel="stylesheet" />
-
-        <!-- If you'd like to support IE8 (for Video.js versions prior to v7) -->
-        <script src="https://vjs.zencdn.net/ie8/1.1.2/videojs-ie8.min.js"></script>
     </head>
 </head>
 <body>
@@ -46,7 +43,7 @@
 
     <div id="query-video">
         <video
-            id="my-video"
+            id="query-video"
             class="video-js"
             controls
             preload="auto"
@@ -57,7 +54,7 @@
             <source src="out.mp4" type="video/mp4" />
         </video>
         <video
-            id="my-video"
+            id="match-video"
             class="video-js"
             controls
             preload="auto"
@@ -68,17 +65,82 @@
             <source src="out.mp4" type="video/mp4" />
         </video>
     </div>
-
-    <div id="matched-video">
-        <div class="embed-responsive embed-responsive-4by3">
-            <iframe class="embed-responsive-item" src=""></iframe>
-        </div>
-    </div>
+    <input type="range" min="0" max="599" value="300" id="myFrameSlider" style="width: 352px;">
+    <canvas id="myChart" width="352" height="100"></canvas>
 
     <!-- Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <script src="https://vjs.zencdn.net/7.5.5/video.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+    <script src="./calculate_scores.js"></script>
+    <script>
+        var slider = document.getElementById('myFrameSlider');
+        slider.oninput = function () {
+            // Move in video to what second we are in (at 30fps) according to the slider
+            sliderValue = parseInt(this.value);
+            secondsValue = sliderValue / 30;
+            var video = videojs('match-video');
+            video.currentTime(secondsValue);
+        }
+    </script>
+    <script>
+        helper = [
+            0.35781122120365116,
+            0.3788545040759598,
+            0.39103100741674435,
+            0.4038796628715906,
+            0.4219177976359687,
+            0.45406801156089094,
+            0.4817931988517644,
+            0.515401797793112,
+            1,
+            0.5290531219321039,
+            0.5073469567121657,
+            0.49587857044491945,
+            0.4872318599476778,
+            0.47947199285384035,
+            0.45974055408424286,
+            0.4329018640324922,
+            0.41471178737159886,
+            0.40882466024507,
+            0.4125294201582652,
+            0.41957429586765205,
+            0.42312583971466655,
+            0.43142477781032884,
+            0.435275150362726,
+            0.4334987144098901,
+            0.43185655116103205,
+            0.42954608118582804,
+            0.42955685357224616,
+            0.42770702607575783,
+            0.4227086815168666,
+            0.40896995988150553,
+            0.39740569864917685
+        ];
+
+        // Set chart defaults for styling
+        Chart.defaults.global.legend.display = false;
+        Chart.defaults.scale.ticks.display = false;
+        Chart.defaults.scale.gridLines.display = false;
+        Chart.defaults.scale.gridLines.tickMarkLength = 0;
+
+        var labels = Array.from(Array(31).keys())
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: helper,
+                    fill: true,
+                    pointRadius: 0,
+                }],
+            },
+        });
+        myChart.canvas.parentNode.style.height = '100px';
+        myChart.canvas.parentNode.style.width = '352px';
+    </script>
 </body>
 </html>

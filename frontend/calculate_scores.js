@@ -118,6 +118,24 @@ function convert_dist_to_scores(dists) {
 	return dists;
 }
 
+function convert_ranked_scores_to_hist(final_scores) {
+    // Find key with largest value in list (top scoring video)
+    key_with_largest_value = '';
+    largest_value = Number.NEGATIVE_INFINITY;
+    for (const k in final_scores) {
+        for (const v in final_scores[k]) {
+            if (final_scores[k][v] > largest_value) {
+                largest_value = final_scores[k][v]
+                key_with_largest_value = k
+            }
+        }
+    }
+
+    console.log(final_scores[key_with_largest_value])
+    // Make histogram with final_scores[key_with_largest_value]
+
+}
+
 wav_scores = {
     "StarCraft": [
         3470.97509765625,
@@ -821,7 +839,8 @@ edge_scores = {
 }
 
 // Commands to test functionality
-// final_scores = calculate_cum_scores(wav_scores, edge_scores, color_scores);
-// ranked_files = get_top_ranked_files(final_scores);
-// ranked_scores = convert_dist_to_scores(ranked_files)
+final_scores = calculate_cum_scores(wav_scores, edge_scores, color_scores);
+ranked_files = get_top_ranked_files(final_scores);
+ranked_scores = convert_dist_to_scores(ranked_files);
+convert_ranked_scores_to_hist(ranked_scores);
 // console.log(ranked_scores);
