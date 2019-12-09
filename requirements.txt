@@ -6,3 +6,5 @@ python-dotenv
 pillow
 opencv-python
 ffmpeg-python
+imageio
+imageio-ffmpeg
