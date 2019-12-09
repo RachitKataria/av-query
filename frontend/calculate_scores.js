@@ -24,6 +24,7 @@ function normalize(scores) {
 }
 
 function calculate_cum_scores(wav_scores, edge_scores, color_scores) {
+  console.log("Wav scores: ", wav_scores)
 	let num_timestamps = wav_scores['sports'].length; // All score arrays should have the same #
 
 	var final_scores = {};

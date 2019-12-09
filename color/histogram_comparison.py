@@ -5,9 +5,10 @@ import cv2
 import heapq
 import glob
 from PIL import Image
+import os
 
-HISTOGRAM_JSON = "../data/histograms/videos.json"
-HISTOGRAMS = "../data/histograms/videos.npy"
+HISTOGRAM_JSON = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../data/histograms/videos.json")
+HISTOGRAMS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../data/histograms/videos.npy")
 SL_SIZE = 15
 NUM_VIDEOS = 7
 
@@ -54,7 +55,11 @@ def get_matches(query_dir):
             scores["StarCraft"] = []
 
     # Get color histogram for each query frame
+    print(query_dir)
+    
     query_frames = read_video(query_dir)
+
+    print(query_frames.shape)
     query_frames = np.flip(query_frames, 3)
     query_frames = np.asarray(query_frames)
 
