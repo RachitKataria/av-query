@@ -42,7 +42,7 @@
             preload="auto"
             width="352"
             height="288"
-            data-setup="{}"
+            data-setup='{ "controlBar" : false }'
         >
             <source src="out.mp4" type="video/mp4" />
         </video>
@@ -53,9 +53,9 @@
             preload="auto"
             width="352"
             height="288"
-            data-setup="{}"
+            data-setup='{ "controlBar" : false }'
         >
-            <source src="out.mp4" type="video/mp4" />
+            <source src="../data/database_videos/sports/sports.mp4" type="video/mp4" />
         </video>
     </div>
     <input type="range" min="0" max="599" value="300" id="myFrameSlider" style="width: 352px;">
@@ -68,7 +68,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <script src="https://vjs.zencdn.net/7.5.5/video.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
-    <script src="./calculate_scores.js"></script>
+
     <script>
         var slider = document.getElementById('myFrameSlider');
         slider.oninput = function () {
@@ -78,6 +78,13 @@
             var video = videojs('match-video');
             video.currentTime(secondsValue);
         }
+    </script>
+    <script>
+        var video = videojs('match-video');
+        video.on("timeupdate", function() {
+            var slider = document.getElementById('myFrameSlider');
+            slider.value = video.currentTime() * 30;
+        });
     </script>
     <script>
         helper = [
@@ -143,7 +150,7 @@
         filename = $("#query-file").val();
         $.when(
             $.ajax({
-                data: JSON.stringify({ "filename": filename }),
+                data: JSON.stringify({ "filename": filename + '.wav' }),
                 contentType: 'application/json',
                 url: 'http://localhost:5000/audio',
                 type: 'POST',
@@ -152,7 +159,7 @@
                 }
             }),
             $.ajax({
-                data: JSON.stringify({ "filename": filename.slice(0, -4) }),
+                data: JSON.stringify({ "filename": filename }),
                 contentType: 'application/json',
                 url: 'http://localhost:5000/color',
                 type: 'POST',
@@ -195,7 +202,6 @@
                 th_score.innerHTML = (Math.max(...ranked_scores[filename])*100).toFixed(2);
                 th_score.setAttribute("style", "list-style-position: inside;");
             }
-
         });
     });
     </script>
