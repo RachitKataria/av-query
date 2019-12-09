@@ -89,10 +89,9 @@ function get_top_ranked_files(final_scores) {
 		let min_idx = indexOfMin(min_scores);
 
 		min_filename = DB_FILENAMES[min_idx];
-		ranked_files[min_filename] = final_scores[min_filename];
 
-		// Convert score dists to actual scores
-		ranked_files[min_filename] = ranked_files[min_filename];
+    // Convert score dists to actual scores
+		ranked_files[min_filename] = final_scores[min_filename];
 
 		// Increment num ranked
 		num_ranked++;
