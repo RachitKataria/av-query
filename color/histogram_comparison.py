@@ -22,12 +22,6 @@ def read_video(path):
 
     for f in rgbs:
         with open(f, 'rb') as file:
-
-            # Don't use unless using .rgb files converted from png's gathered from youtube video using vlc
-            # reds.append(np.flip(np.roll(np.asarray(Image.frombytes('L', (352, 288), file.read(352*288), 'raw')), -160), axis=0))
-            # greens.append(np.flip(np.roll(np.asarray(Image.frombytes('L', (352, 288), file.read(352*288), 'raw')), -160), axis=0))
-            # blues.append(np.flip(np.roll(np.asarray(Image.frombytes('L', (352, 288), file.read(352*288), 'raw')), -160), axis=0))
-
             reds.append(np.asarray(Image.frombytes('L', (352, 288), file.read(352*288), 'raw')))
             greens.append(np.asarray(Image.frombytes('L', (352, 288), file.read(352*288), 'raw')))
             blues.append(np.asarray(Image.frombytes('L', (352, 288), file.read(352*288), 'raw')))
