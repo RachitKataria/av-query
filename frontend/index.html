@@ -59,7 +59,7 @@
             height="288"
             data-setup='{ "controlBar" : false }'
         >
-            <source src="out.mp4" type="video/mp4" />
+            <source src="../data/database_videos/sports/sports.mp4" type="video/mp4" />
         </video>
     </div>
     <input type="range" min="0" max="599" value="300" id="myFrameSlider" style="width: 352px;">
@@ -82,6 +82,13 @@
             var video = videojs('match-video');
             video.currentTime(secondsValue);
         }
+    </script>
+    <script>
+        var video = videojs('match-video');
+        video.on("timeupdate", function() {
+            var slider = document.getElementById('myFrameSlider');
+            slider.value = video.currentTime() * 30;
+        });
     </script>
     <script>
         helper = [
@@ -181,7 +188,6 @@
             final_scores = calculate_cum_scores(wav_scores[0], edge_scores[0], color_scores[0]);
             ranked_files = get_top_ranked_files(final_scores);
             ranked_scores = convert_dist_to_scores(ranked_files)
-            console.log(ranked_scores);
         });
     });
     </script>
