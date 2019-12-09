@@ -820,7 +820,8 @@ edge_scores = {
    ]
 }
 
-final_scores = calculate_cum_scores(wav_scores, edge_scores, color_scores);
-ranked_files = get_top_ranked_files(final_scores);
-ranked_scores = convert_dist_to_scores(ranked_files)
-console.log(ranked_scores);
+// Commands to test functionality
+// final_scores = calculate_cum_scores(wav_scores, edge_scores, color_scores);
+// ranked_files = get_top_ranked_files(final_scores);
+// ranked_scores = convert_dist_to_scores(ranked_files)
+// console.log(ranked_scores);
