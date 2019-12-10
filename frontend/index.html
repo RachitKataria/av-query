@@ -124,7 +124,7 @@
         filename = $("#query-file").val();
         $.when(
             $.ajax({
-                data: JSON.stringify({ "filename": filename + '.wav' }),
+                data: JSON.stringify({ "filename": filename + '/' + filename + '.wav' }),
                 contentType: 'application/json',
                 url: 'http://localhost:5000/audio',
                 type: 'POST',
@@ -153,9 +153,11 @@
 
             // Calculate ranked scores for top three 
             final_scores = calculate_cum_scores(wav_scores[0], edge_scores[0], color_scores[0]);
+            console.log("Final Scores: ", final_scores);
             ranked_files = get_top_ranked_files(final_scores);
             ranked_scores = convert_dist_to_scores(ranked_files); // dict with file --> scores in sorted order
 
+            console.log("Ranked Scores: ", ranked_scores);
             // Add top matches to dom
             var table = document.getElementById("matched-videos-group");
             while (table.lastChild) {
@@ -218,5 +220,4 @@
     });
     </script>
 </body>
-
 </html>

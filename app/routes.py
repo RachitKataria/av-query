@@ -20,10 +20,9 @@ def audio():
     if request.method == 'POST':
         # Get file name and file path
         filename = request.get_json()['filename']
-        file_path = os.path.join(app.root_path, '../audio/mfcc/query', filename)
+        file_path = os.path.join(app.root_path, '../data/query', filename)
         # Retrieve ranked wavs for query
-        wav_scores = mfcc.get_wavs_scores_for_query(file_path)
-        return jsonify(wav_scores)
+        return jsonify(mfcc.get_wavs_scores_for_query(file_path))
 
 @app.route('/convert_to_mp4', methods=['POST'])
 def convert_to_mp4():

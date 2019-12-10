@@ -12,6 +12,9 @@ function normalize(scores) {
 		overall_max = Math.max(...scores[filename], overall_max);
 	}
 
+  console.log(overall_min);
+  console.log(overall_max);
+
 	let num_timestamps = scores[scores_keys[0]].length; // All score arrays should have the same #
 	for (const filename of scores_keys) {
 		// For all timestamps, normalize
@@ -24,18 +27,17 @@ function normalize(scores) {
 }
 
 function calculate_cum_scores(wav_scores, edge_scores, color_scores) {
-  console.log("Wav scores: ", wav_scores)
 	let num_timestamps = wav_scores['sports'].length; // All score arrays should have the same #
-
 	var final_scores = {};
+
+  // Normalize all scores to 0-1 for each feature 
+
+  wav_scores = normalize(wav_scores);
+  edge_scores = normalize(edge_scores);
+  color_scores = normalize(color_scores);
 
 	// Iterate over all filenames and sum over arrays
 	for (const filename of DB_FILENAMES) {
-		// Normalize all scores to 0-1 for each feature
-		wav_scores = normalize(wav_scores);
-		edge_scores = normalize(edge_scores);
-		color_scores = normalize(color_scores);
-
 		// Init empty cumulate scores array
 		var filename_cum_scores = [];
 		for (var i = 0; i < num_timestamps; i++) {
@@ -104,6 +106,7 @@ function get_top_ranked_files(final_scores) {
 }
 
 function convert_dist_to_scores(dists) {
+  console.log("CONVERT DISTS TO SCORES");
 	dists = normalize(dists);
 	dists_keys = Object.keys(dists);
 
