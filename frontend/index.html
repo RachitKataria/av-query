@@ -14,7 +14,15 @@
     <link href="https://vjs.zencdn.net/7.5.5/video-js.css" rel="stylesheet" />
     <style>
         body {
+            width: 100%;
+        }
+
+        #container {
+            margin: 0 auto;
             width: 352px;
+            padding-top: 50px;
+            text-align: center;
+            padding-bottom: 50px;
         }
 
         #myProgress {
@@ -37,31 +45,37 @@
 </head>
 
 <body>
-    <div id="query">
-        <form>
-            <div class="form-group">
-                <label for="query-file">Query</label>
-                <input type="text" class="form-control-file" id="query-file" placeholder="Directory containing query files">
-                <button type="button" class="form-control-button" id="query-submit-button">Submit Query</button>
-            </div>
-        </form>
-    </div>
-    <div id="myProgress">
-        <div id="myBar">
-            <div id="windows"></div>
+    <div id="container">
+        <div id="query">
+            <form>
+                <div class="form-group">
+                    <label style="font-size: 35px;" for="query-file">AV-Query</label>
+                    <input type="text" class="form-control-file" id="query-file" placeholder="Directory containing query files">
+                    <br>
+                    <button type="button" class="form-control-button" id="query-submit-button">Submit Query</button>
+                </div>
+            </form>
         </div>
-    </div>
-    <div id="matched-videos" style="margin: 0 auto; width: 100px;">
-        <div class="row">
-            <div class=".col-md-6">
-                <table id="matched-videos-group"></table>
+        <div id="myProgress">
+            <div id="myBar">
+                <div id="windows"></div>
             </div>
         </div>
+        <br>
+        <div id="matched-videos" style="margin: 0 auto; width: 100px;">
+            <div class="row">
+                <div class=".col-md-6">
+                    <table id="matched-videos-group"></table>
+                </div>
+            </div>
+        </div>
+        <br>
+        <video id="query-video" class="video-js" controls preload="auto" width="352" height="288" data-setup='{ "controlBar" : false }'></video>
+        <br>
+        <video id="match-video" class="video-js" controls preload="auto" width="352" height="288" data-setup='{ "controlBar" : false }'></video>
+        <input type="range" min="0" max="449" value="224" id="myFrameSlider" disabled style="width: 352px;">
+        <canvas id="myChart" width="352" height="100" style="width: 352px; height: 100px;"></canvas>
     </div>
-    <video id="query-video" class="video-js" controls preload="auto" width="352" height="288" data-setup='{ "controlBar" : false }'></video>
-    <video id="match-video" class="video-js" controls preload="auto" width="352" height="288" data-setup='{ "controlBar" : false }'></video>
-    <input type="range" min="0" max="449" value="224" id="myFrameSlider" disabled style="width: 352px;">
-    <canvas id="myChart" width="352" height="100" style="width: 352px; height: 100px;"></canvas>
     <!-- Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -69,112 +83,108 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <script src="https://vjs.zencdn.net/7.5.5/video.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
-
     <script>
-        var sliderEle = document.getElementById('myFrameSlider');
-        if (sliderEle != null) {
-            var slider = document.getElementById('myFrameSlider');
-            slider.oninput = function() {
-                // Move in video to what second we are in (at 30fps) according to the slider
-                sliderValue = parseInt(this.value);
-                secondsValue = sliderValue / 30;
-                var video = videojs('match-video');
-                video.currentTime(secondsValue);
-            }
-        }
-    </script>
-    <script>
-        var videoEle = document.getElementById('match-video');
-        if (videoEle != null) {
+    var sliderEle = document.getElementById('myFrameSlider');
+    if (sliderEle != null) {
+        var slider = document.getElementById('myFrameSlider');
+        slider.oninput = function() {
+            // Move in video to what second we are in (at 30fps) according to the slider
+            sliderValue = parseInt(this.value);
+            secondsValue = sliderValue / 30;
             var video = videojs('match-video');
-            video.on("timeupdate", function() {
-                var slider = document.getElementById('myFrameSlider');
-                slider.value = video.currentTime() * 30;
-            });
+            video.currentTime(secondsValue);
         }
+    }
     </script>
-
     <script>
-        function display_hist(scores) {
-            // Set chart defaults for styling
-            Chart.defaults.global.legend.display = false;
-            Chart.defaults.scale.ticks.display = false;
-            Chart.defaults.scale.gridLines.display = false;
-            Chart.defaults.scale.gridLines.tickMarkLength = 0;
+    var videoEle = document.getElementById('match-video');
+    if (videoEle != null) {
+        var video = videojs('match-video');
+        video.on("timeupdate", function() {
+            var slider = document.getElementById('myFrameSlider');
+            slider.value = video.currentTime() * 30;
+        });
+    }
+    </script>
+    <script>
+    function display_hist(scores) {
+        // Set chart defaults for styling
+        Chart.defaults.global.legend.display = false;
+        Chart.defaults.scale.ticks.display = false;
+        Chart.defaults.scale.gridLines.display = false;
+        Chart.defaults.scale.gridLines.tickMarkLength = 0;
 
-            var labels = Array.from(Array(31).keys());
-            var ctx = document.getElementById('myChart').getContext('2d');
-            var myChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        data: scores,
-                        fill: true,
-                        pointRadius: 0,
+        var labels = Array.from(Array(31).keys());
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: scores,
+                    fill: true,
+                    pointRadius: 0,
+                }],
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            min: 0,
+                            max: 1,
+                        },
                     }],
                 },
-                options: {
-                    scales: {
-                        yAxes: [{
-                            ticks: {
-                                min: 0,
-                                max: 1,
-                            },
-                        }],
-                    },
-                    events: [],
-                },
-            });
-            myChart.canvas.parentNode.style.height = '100px';
-            myChart.canvas.parentNode.style.width = '352px';
-        }
+                events: [],
+            },
+        });
+        myChart.canvas.parentNode.style.height = '100px';
+        myChart.canvas.parentNode.style.width = '352px';
+    }
     </script>
     <!-- Get calculating rank functions -->
     <script type="text/javascript" src="calculate_scores.js"></script>
-
     <script>
-        // Progress Bar
-        function move(progress) {
-            var elem = document.getElementById("myBar");
-            var width = parseInt(elem.style.width.slice(0, -1));
-            var id = setInterval(frame, 10);
+    // Progress Bar
+    function move(progress) {
+        var elem = document.getElementById("myBar");
+        var width = parseInt(elem.style.width.slice(0, -1));
+        var id = setInterval(frame, 10);
 
-            var windowsElem = document.getElementById("windows");
-            var windowsWidth = windowsElem.clientWidth;
-            if (progress == 1) {
-                var windowsId = setInterval(windowsloading, 20);
-            }
-            
-            // Main progress bar
-            function frame() {
-                if (width >= 33 * progress + 1) {
-                    clearInterval(id);
-                    if (progress == 3) {
-                        progress = 0;
-                    }
-                } else {
-                    width++;
-                    elem.style.width = width + "%";
-                }
-            }
-
-            // Windows progress bar
-            function windowsloading() {
-                if (windowsWidth >= 100) {
-                    windowsWidth = 0;
-                    if (windowsElem.parentElement.style.width == "100%") {
-                        clearInterval(windowsId);
-                    }
-                } else {
-                    windowsWidth++;
-                }
-                windowsElem.style.width = windowsWidth + "%";
-            }
-            
+        var windowsElem = document.getElementById("windows");
+        var windowsWidth = windowsElem.clientWidth;
+        if (progress == 1) {
+            var windowsId = setInterval(windowsloading, 20);
         }
-    </script>
 
+        // Main progress bar
+        function frame() {
+            if (width >= 33 * progress + 1) {
+                clearInterval(id);
+                if (progress == 3) {
+                    progress = 0;
+                }
+            } else {
+                width++;
+                elem.style.width = width + "%";
+            }
+        }
+
+        // Windows progress bar
+        function windowsloading() {
+            if (windowsWidth >= 100) {
+                windowsWidth = 0;
+                if (windowsElem.parentElement.style.width == "100%") {
+                    clearInterval(windowsId);
+                }
+            } else {
+                windowsWidth++;
+            }
+            windowsElem.style.width = windowsWidth + "%";
+        }
+
+    }
+    </script>
     <!-- On button click! -->
     <script>
     $("#query-submit-button").click(function() {
@@ -238,31 +248,61 @@
             while (table.lastChild) {
                 table.removeChild(table.lastChild);
             }
+
+            var tr = document.createElement('tr');
+            table.appendChild(tr);
+
+            // Add th filename to DOM
+            var th_filename = document.createElement('th');
+            tr.appendChild(th_filename);
+            th_filename.innerHTML = 'Filename';
+            th_filename.setAttribute("style", "list-style-position: inside; border: 1px solid black; padding-left: 5px; padding-right: 5px; ");
+
+            // Add th score to DOM
+            var th_score = document.createElement('th');
+            tr.appendChild(th_score);
+            th_score.innerHTML = 'Score';
+            th_score.setAttribute("style", "list-style-position: inside; border: 1px solid black; padding-left: 5px; padding-right: 5px;");
+
             for (var f in ranked_scores) {
 
                 // Add table row to DOM
                 var tr = document.createElement('tr');
-                tr.onclick = function(fn) { return function() { 
-                    db_filepath = "../data/database_videos/" + fn + "/" + fn + ".mp4";
+                tr.onclick = function(fn) {
+                    return function() {
+                        db_filepath = "../data/database_videos/" + fn + "/" + fn + ".mp4";
 
-                    // Update match video
-                    var match_video = videojs('match-video');
-                    match_video.src(db_filepath);
+                        // Update match video
+                        var match_video = videojs('match-video');
+                        match_video.src(db_filepath);
 
-                    display_hist(ranked_scores[fn]); } }(f);
+                        display_hist(ranked_scores[fn]);
+
+                        // Clear all prev highlighted rows
+                        var tRow = table.getElementsByTagName("tr");
+
+                        for (var i = 0; i < tRow.length; i++) {
+                            tRow[i].setAttribute("style", "background-color: #FFFFFF;");
+                        }
+
+                        // Highlight row
+                        this.setAttribute("style", "background-color: #DCDCDC;");
+                    }
+                }(f);
+
                 table.appendChild(tr);
 
                 // Add th filename to DOM
                 var th_filename = document.createElement('th');
                 tr.appendChild(th_filename);
                 th_filename.innerHTML = f;
-                th_filename.setAttribute("style", "list-style-position: inside;");
+                th_filename.setAttribute("style", "font-weight: normal; list-style-position: inside; border: 1px solid black; padding-left: 5px; padding-right: 5px; ");
 
                 // Add th score to DOM
                 var th_score = document.createElement('th');
                 tr.appendChild(th_score);
-                th_score.innerHTML = (Math.max(...ranked_scores[f])*100).toFixed(2);
-                th_score.setAttribute("style", "list-style-position: inside;");
+                th_score.innerHTML = (Math.max(...ranked_scores[f]) * 100).toFixed(2);
+                th_score.setAttribute("style", "font-weight: normal; list-style-position: inside; border: 1px solid black; padding-left: 5px; padding-right: 5px;");
             }
 
             display_hist(ranked_scores[Object.keys(ranked_scores)[0]]);
@@ -295,4 +335,5 @@
     });
     </script>
 </body>
+
 </html>
