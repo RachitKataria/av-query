@@ -39,7 +39,7 @@
         </video>
         <video id="match-video" class="video-js" controls preload="auto" width="352" height="288" data-setup='{ "controlBar" : false }'>
         </video>
-        <input type="range" min="0" max="599" value="300" id="myFrameSlider" disabled style="width: 352px;">
+        <input type="range" min="0" max="449" value="224" id="myFrameSlider" disabled style="width: 352px;">
     </div>
     <canvas id="myChart" width="352" height="100"></canvas>
     <!-- Bootstrap JS -->
@@ -76,14 +76,13 @@
 
     <script>
         function display_hist(scores) {
-
             // Set chart defaults for styling
             Chart.defaults.global.legend.display = false;
             Chart.defaults.scale.ticks.display = false;
             Chart.defaults.scale.gridLines.display = false;
             Chart.defaults.scale.gridLines.tickMarkLength = 0;
 
-            var labels = Array.from(Array(31).keys())
+            var labels = Array.from(Array(31).keys());
             var ctx = document.getElementById('myChart').getContext('2d');
             var myChart = new Chart(ctx, {
                 type: 'line',
@@ -104,6 +103,7 @@
                             },
                         }],
                     },
+                    events: [],
                 },
             });
             myChart.canvas.parentNode.style.height = '100px';
