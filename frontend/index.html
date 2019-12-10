@@ -15,14 +15,17 @@
     <style>
         body {
             width: 100%;
+            background-color: #FCF7FF;
+            font-family: 'Comic Sans MS';
+            display: flex;
+            flex-direction: row;
         }
 
         #container {
             margin: 0 auto;
             width: 352px;
-            padding-top: 50px;
+            margin-top: 50px;
             text-align: center;
-            padding-bottom: 50px;
         }
 
         #myProgress {
@@ -41,15 +44,38 @@
             height: 30px;
             background-color: #7FFF00;
         }
+
+        .oscar {
+            padding-top: 30px;
+            margin: 0 auto;
+            width: 352px;
+            text-align: center;
+        }
+
+        .rotate {
+            animation: rotation 2s infinite linear;
+        }
+
+        @keyframes rotation {
+            from {
+                transform: rotate(0deg);
+            } to {
+                transform: rotate(359deg);
+            }
+        }
     </style>
 </head>
 
 <body>
+    <div class="oscar">
+        <img src="oscar.png" alt="oscar" style="width: 100%;" />
+    </div>
     <div id="container">
         <div id="query">
             <form id="query-form">
                 <div class="form-group">
                     <label style="font-size: 35px;" for="query-file">AV-Query</label>
+                    <img id="parag" src="parag.png" alt="parag parag" style="width: 50px; margin-left: 30px; margin-bottom: 30px;"/>
                     <input type="text" class="form-control-file" id="query-file" placeholder="Directory containing query files">
                     <br>
                     <button type="button" class="form-control-button" id="query-submit-button">Submit Query</button>
@@ -74,7 +100,10 @@
         <br>
         <video id="match-video" class="video-js" controls preload="auto" width="352" height="288" data-setup='{ "controlBar" : false }'></video>
         <input type="range" min="0" max="449" value="224" id="myFrameSlider" disabled style="width: 352px;">
-        <canvas id="myChart" width="352" height="100" style="width: 352px; height: 100px;"></canvas>
+        <canvas id="myChart" width="352" height="100" style="width: 352px; height: 100px; margin-bottom: 50px;"></canvas>
+    </div>
+    <div class="oscar">
+        <img src="oscar.png" alt="oscar" style="width: 100%;"/>
     </div>
     <!-- Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
@@ -165,6 +194,7 @@
         var windowsWidth = windowsElem.clientWidth;
         if (progress == 1) {
             var windowsId = setInterval(windowsloading, 20);
+            document.getElementById("parag").classList.add("rotate");
         }
 
         // Main progress bar
@@ -183,16 +213,17 @@
         // Windows progress bar
         function windowsloading() {
             if (windowsWidth >= 100) {
-                windowsWidth = 0;
                 if (windowsElem.parentElement.style.width == "100%") {
                     clearInterval(windowsId);
+                    document.getElementById("parag").classList.remove("rotate");
+                } else {
+                    windowsWidth = 0;
                 }
             } else {
                 windowsWidth++;
             }
             windowsElem.style.width = windowsWidth + "%";
         }
-
     }
     </script>
     <!-- On button click! -->
@@ -320,6 +351,9 @@
                 th_score.innerHTML = (Math.max(...ranked_scores[f]) * 100).toFixed(2);
                 th_score.setAttribute("style", "font-weight: normal; list-style-position: inside; border: 1px solid black; padding-left: 5px; padding-right: 5px;");
             }
+
+            // Highlight first child
+            table.children[1].setAttribute("style", "background-color: #DCDCDC;");
 
             display_hist(ranked_scores[Object.keys(ranked_scores)[0]]);
 
