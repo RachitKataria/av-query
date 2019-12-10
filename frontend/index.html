@@ -156,7 +156,14 @@
 
                 // Add table row to DOM
                 var tr = document.createElement('tr');
-                tr.onclick = function(fn) { return function() { display_hist(ranked_scores[fn]); } }(f);
+                tr.onclick = function(fn) { return function() { 
+                    db_filepath = "../data/database_videos/" + fn + "/" + fn + ".mp4";
+                    
+                    // Update match video
+                    var match_video = videojs('match-video');
+                    match_video.src(db_filepath);
+
+                    display_hist(ranked_scores[fn]); } }(f);
                 table.appendChild(tr);
 
                 // Add th filename to DOM
@@ -176,7 +183,7 @@
 
             // Create query mp4
             query_filepath = "../data/query/" + filename + "/" + filename + ".mp4";
-            db_filepath = "../data/database_videos/" + Object.keys(ranked_scores)[0] + "/" + Object.keys(ranked_scores)[0] + ".mp4"
+            db_filepath = "../data/database_videos/" + Object.keys(ranked_scores)[0] + "/" + Object.keys(ranked_scores)[0] + ".mp4";
 
             console.log("FILENAME: ", filename);
             $.ajax({
