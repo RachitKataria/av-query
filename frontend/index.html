@@ -194,7 +194,6 @@
         var windowsWidth = windowsElem.clientWidth;
         if (progress == 1) {
             var windowsId = setInterval(windowsloading, 20);
-            document.getElementById("parag").classList.add("rotate");
         }
 
         // Main progress bar
@@ -246,6 +245,9 @@
         while (table.lastChild) {
             table.removeChild(table.lastChild);
         }
+
+        // SPIN PARAG SPIN
+        document.getElementById("parag").classList.add("rotate");
 
         $.when(
             $.ajax({
