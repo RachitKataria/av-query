@@ -38,7 +38,7 @@
 
 <body>
     <div id="query">
-        <form>
+        <form id="query-form">
             <div class="form-group">
                 <label for="query-file">Query</label>
                 <input type="text" class="form-control-file" id="query-file" placeholder="Directory containing query files">
@@ -70,6 +70,13 @@
     <script src="https://vjs.zencdn.net/7.5.5/video.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
 
+    <!-- Prevent reload on "enter" key press -->
+    <script>
+        document.getElementById('query-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+        }, false);
+    </script>
+
     <script>
         var sliderEle = document.getElementById('myFrameSlider');
         if (sliderEle != null) {
@@ -83,6 +90,7 @@
             }
         }
     </script>
+
     <script>
         var videoEle = document.getElementById('match-video');
         if (videoEle != null) {
@@ -130,6 +138,7 @@
             myChart.canvas.parentNode.style.width = '352px';
         }
     </script>
+
     <!-- Get calculating rank functions -->
     <script type="text/javascript" src="calculate_scores.js"></script>
 
@@ -191,6 +200,11 @@
         var query_video = videojs('query-video');
         query_video.src("");
 
+        var table = document.getElementById("matched-videos-group");
+        while (table.lastChild) {
+            table.removeChild(table.lastChild);
+        }
+
         $.when(
             $.ajax({
                 data: JSON.stringify({ "filename": filename + '/' + filename + '.wav' }),
@@ -235,9 +249,6 @@
             console.log("Ranked Scores: ", ranked_scores);
             // Add top matches to dom
             var table = document.getElementById("matched-videos-group");
-            while (table.lastChild) {
-                table.removeChild(table.lastChild);
-            }
             for (var f in ranked_scores) {
 
                 // Add table row to DOM
@@ -294,5 +305,6 @@
         });
     });
     </script>
+    
 </body>
 </html>
