@@ -11,10 +11,29 @@
     <link rel="stylesheet" href="">
     <title>AV-Query</title>
     <!-- Custom Video JS -->
+    <link href="https://vjs.zencdn.net/7.5.5/video-js.css" rel="stylesheet" />
+    <style>
+        body {
+            width: 352px;
+        }
 
-    <head>
-        <link href="https://vjs.zencdn.net/7.5.5/video-js.css" rel="stylesheet" />
-    </head>
+        #myProgress {
+            width: 100%;
+            background-color: grey;
+        }
+
+        #myBar {
+            width: 0%;
+            height: 30px;
+            background-color: green;
+        }
+
+        #windows {
+            width: 0%;
+            height: 30px;
+            background-color: #7FFF00;
+        }
+    </style>
 </head>
 
 <body>
@@ -26,6 +45,11 @@
                 <button type="button" class="form-control-button" id="query-submit-button">Submit Query</button>
             </div>
         </form>
+    </div>
+    <div id="myProgress">
+        <div id="myBar">
+            <div id="windows"></div>
+        </div>
     </div>
     <div id="matched-videos" style="margin: 0 auto; width: 100px;">
         <div class="row">
@@ -51,27 +75,27 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
 
     <script>
-    var sliderEle = document.getElementById('myFrameSlider');
-    if (sliderEle != null) {
-        var slider = document.getElementById('myFrameSlider');
-        slider.oninput = function() {
-            // Move in video to what second we are in (at 30fps) according to the slider
-            sliderValue = parseInt(this.value);
-            secondsValue = sliderValue / 30;
-            var video = videojs('match-video');
-            video.currentTime(secondsValue);
+        var sliderEle = document.getElementById('myFrameSlider');
+        if (sliderEle != null) {
+            var slider = document.getElementById('myFrameSlider');
+            slider.oninput = function() {
+                // Move in video to what second we are in (at 30fps) according to the slider
+                sliderValue = parseInt(this.value);
+                secondsValue = sliderValue / 30;
+                var video = videojs('match-video');
+                video.currentTime(secondsValue);
+            }
         }
-    }
     </script>
     <script>
-    var videoEle = document.getElementById('match-video');
-    if (videoEle != null) {
-        var video = videojs('match-video');
-        video.on("timeupdate", function() {
-            var slider = document.getElementById('myFrameSlider');
-            slider.value = video.currentTime() * 30;
-        });
-    }
+        var videoEle = document.getElementById('match-video');
+        if (videoEle != null) {
+            var video = videojs('match-video');
+            video.on("timeupdate", function() {
+                var slider = document.getElementById('myFrameSlider');
+                slider.value = video.currentTime() * 30;
+            });
+        }
     </script>
 
     <script>
@@ -112,10 +136,65 @@
     </script>
     <!-- Get calculating rank functions -->
     <script type="text/javascript" src="calculate_scores.js"></script>
+
+    <script>
+        // Progress Bar
+        function move(progress) {
+            var elem = document.getElementById("myBar");
+            var width = parseInt(elem.style.width.slice(0, -1));
+            var id = setInterval(frame, 10);
+
+            var windowsElem = document.getElementById("windows");
+            var windowsWidth = windowsElem.clientWidth;
+            if (progress == 1) {
+                var windowsId = setInterval(windowsloading, 20);
+            }
+            
+            // Main progress bar
+            function frame() {
+                if (width >= 33 * progress + 1) {
+                    clearInterval(id);
+                    if (progress == 3) {
+                        progress = 0;
+                    }
+                } else {
+                    width++;
+                    elem.style.width = width + "%";
+                }
+            }
+
+            // Windows progress bar
+            function windowsloading() {
+                if (windowsWidth >= 100) {
+                    windowsWidth = 0;
+                    if (windowsElem.parentElement.style.width == "100%") {
+                        clearInterval(windowsId);
+                    }
+                } else {
+                    windowsWidth++;
+                }
+                windowsElem.style.width = windowsWidth + "%";
+            }
+            
+        }
+    </script>
+
     <!-- On button click! -->
     <script>
     $("#query-submit-button").click(function() {
         filename = $("#query-file").val();
+
+        // Reset progress bar
+        var progress = 0;
+        document.getElementById("myBar").style.width = 0 + "%";
+
+        // Reset videos
+        var match_video = videojs('match-video');
+        match_video.src("");
+
+        var query_video = videojs('query-video');
+        query_video.src("");
+
         $.when(
             $.ajax({
                 data: JSON.stringify({ "filename": filename + '.wav' }),
@@ -123,7 +202,9 @@
                 url: 'http://localhost:5000/audio',
                 type: 'POST',
                 success: function(result) {
-                    console.log(result)
+                    console.log(result);
+                    progress++;
+                    move(progress);
                 }
             }),
             $.ajax({
@@ -132,7 +213,9 @@
                 url: 'http://localhost:5000/color',
                 type: 'POST',
                 success: function(result) {
-                    console.log(result)
+                    console.log(result);
+                    progress++;
+                    move(progress);
                 }
             }),
             $.ajax({
@@ -142,6 +225,8 @@
                 type: 'POST',
                 success: function(result) {
                     console.log(result)
+                    progress++;
+                    move(progress);
                 }
             })).then(function(wav_scores, color_scores, edge_scores) {
 
