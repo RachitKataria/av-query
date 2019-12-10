@@ -35,32 +35,13 @@
         </div>
     </div>
     <div id="query-video">
-        <video
-            id="query-video"
-            class="video-js"
-            controls
-            preload="auto"
-            width="352"
-            height="288"
-            data-setup='{ "controlBar" : false }'
-        >
-            <source src="out.mp4" type="video/mp4" />
+        <video id="query-video" class="video-js" controls preload="auto" width="352" height="288" data-setup='{ "controlBar" : false }'>
         </video>
-        <video
-            id="match-video"
-            class="video-js"
-            controls
-            preload="auto"
-            width="352"
-            height="288"
-            data-setup='{ "controlBar" : false }'
-        >
-            <source src="../data/database_videos/sports/sports.mp4" type="video/mp4" />
+        <video id="match-video" class="video-js" controls preload="auto" width="352" height="288" data-setup='{ "controlBar" : false }'>
         </video>
+        <input type="range" min="0" max="599" value="300" id="myFrameSlider" disabled style="width: 352px;">
     </div>
-    <input type="range" min="0" max="599" value="300" id="myFrameSlider" style="width: 352px;">
     <canvas id="myChart" width="352" height="100"></canvas>
-  
     <!-- Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -68,24 +49,29 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <script src="https://vjs.zencdn.net/7.5.5/video.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
-    <script src="calculate_scores.js"></script>
 
     <script>
+    var sliderEle = document.getElementById('myFrameSlider');
+    if (sliderEle != null) {
         var slider = document.getElementById('myFrameSlider');
-        slider.oninput = function () {
+        slider.oninput = function() {
             // Move in video to what second we are in (at 30fps) according to the slider
             sliderValue = parseInt(this.value);
             secondsValue = sliderValue / 30;
             var video = videojs('match-video');
             video.currentTime(secondsValue);
         }
+    }
     </script>
     <script>
+    var videoEle = document.getElementById('match-video');
+    if (videoEle != null) {
         var video = videojs('match-video');
         video.on("timeupdate", function() {
             var slider = document.getElementById('myFrameSlider');
             slider.value = video.currentTime() * 30;
         });
+    }
     </script>
 
     <script>
@@ -124,7 +110,8 @@
             myChart.canvas.parentNode.style.width = '352px';
         }
     </script>
-
+    <!-- Get calculating rank functions -->
+    <script type="text/javascript" src="calculate_scores.js"></script>
     <!-- On button click! -->
     <script>
     $("#query-submit-button").click(function() {
@@ -186,6 +173,32 @@
             }
 
             display_hist(ranked_scores[Object.keys(ranked_scores)[0]]);
+
+            // Create query mp4
+            query_filepath = "../data/query/" + filename + "/" + filename + ".mp4";
+            db_filepath = "../data/database_videos/" + Object.keys(ranked_scores)[0] + "/" + Object.keys(ranked_scores)[0] + ".mp4"
+
+            console.log("FILENAME: ", filename);
+            $.ajax({
+                data: JSON.stringify({ "filename": filename }),
+                contentType: 'application/json',
+                url: 'http://localhost:5000/convert_to_mp4',
+                type: 'POST',
+                success: function(result) {
+                    console.log("Successfully converted query video to mp4")
+                }
+            }).then(function() {
+                // Update query video
+                var query_video = videojs('query-video');
+                query_video.src(query_filepath);
+
+                // Update match video
+                var match_video = videojs('match-video');
+                match_video.src(db_filepath);
+
+                // Undisable slider
+                document.getElementById("myFrameSlider").disabled = false;
+            });
         });
     });
     </script>
