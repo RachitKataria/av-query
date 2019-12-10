@@ -34,14 +34,20 @@
             </div>
         </div>
     </div>
-    <div id="query-video">
-        <video id="query-video" class="video-js" controls preload="auto" width="352" height="288" data-setup='{ "controlBar" : false }'>
-        </video>
-        <video id="match-video" class="video-js" controls preload="auto" width="352" height="288" data-setup='{ "controlBar" : false }'>
-        </video>
-        <input type="range" min="0" max="449" value="224" id="myFrameSlider" disabled style="width: 352px;">
+    <div id="group-videos" class="container">
+        <div class="row">
+            <div class="col-md">
+                <video id="query-video" class="video-js" controls preload="auto" width="352" height="288" data-setup='{ "controlBar" : false }' />
+            </div>
+            <div class="col-md">
+                <div class="match-video-col-wrapper">
+                    <video id="match-video" class="video-js" controls preload="auto" width="352" height="288" data-setup='{ "controlBar" : false }' />
+                </div>
+                <input type="range" min="0" max="449" value="224" id="myFrameSlider" disabled style="width: 352px;">
+                <canvas id="myChart" width="352" height="100" style="width: 352px; height: 100px;"></canvas>
+            </div>
+        </div>
     </div>
-    <canvas id="myChart" width="352" height="100"></canvas>
     <!-- Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -123,7 +129,7 @@
                 url: 'http://localhost:5000/audio',
                 type: 'POST',
                 success: function(result) {
-                    console.log(result)
+                    console.log('Audio AJAX result received');
                 }
             }),
             $.ajax({
@@ -132,7 +138,7 @@
                 url: 'http://localhost:5000/color',
                 type: 'POST',
                 success: function(result) {
-                    console.log(result)
+                    console.log('Color AJAX result received');
                 }
             }),
             $.ajax({
@@ -141,9 +147,9 @@
                 url: 'http://localhost:5000/edge_detection',
                 type: 'POST',
                 success: function(result) {
-                    console.log(result)
+                    console.log('Edge detection AJAX result received');
                 }
-            })).then(function(wav_scores, color_scores, edge_scores) {
+            })).done(function(wav_scores, color_scores, edge_scores) {
 
             // Calculate ranked scores for top three 
             final_scores = calculate_cum_scores(wav_scores[0], edge_scores[0], color_scores[0]);

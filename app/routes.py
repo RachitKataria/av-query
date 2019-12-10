@@ -18,7 +18,6 @@ def index():
 @app.route('/audio', methods=['POST'])
 def audio():
     if request.method == 'POST':
-        print(request.__dict__)
         # Get file name and file path
         filename = request.get_json()['filename']
         file_path = os.path.join(app.root_path, '../audio/mfcc/query', filename)
