@@ -174,14 +174,21 @@
         Chart.defaults.scale.gridLines.display = false;
         Chart.defaults.scale.gridLines.tickMarkLength = 0;
 
-        var labels = Array.from(Array(31).keys());
+        let interp_scores = []
+        for (let i = 0; i < scores.length-1; i++) {
+            for (let j = 0; j < 15; j++) {
+                interp_scores.push(scores[i]);
+            }
+        }
+
+        var labels = Array.from(Array(450).keys());
         var ctx = document.getElementById('myChart').getContext('2d');
         var myChart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: labels,
                 datasets: [{
-                    data: scores,
+                    data: interp_scores,
                     fill: true,
                     pointRadius: 0,
                 }],
@@ -292,7 +299,7 @@
                 url: 'http://localhost:5000/audio',
                 type: 'POST',
                 success: function(result) {
-                    console.log('Audio AJAX result received');
+                    console.log('Audio AJAX result received', result);
                     progress++;
                     move(progress);
                 }
@@ -303,7 +310,7 @@
                 url: 'http://localhost:5000/color',
                 type: 'POST',
                 success: function(result) {
-                    console.log('Color AJAX result received');
+                    console.log('Color AJAX result received', result);
                     progress++;
                     move(progress);
                 }
@@ -314,7 +321,7 @@
                 url: 'http://localhost:5000/edge_detection',
                 type: 'POST',
                 success: function(result) {
-                    console.log('Edge detection AJAX result received');
+                    console.log('Edge detection AJAX result received', result);
                     progress++;
                     move(progress);
                 }

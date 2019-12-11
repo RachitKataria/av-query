@@ -12,9 +12,6 @@ function normalize(scores) {
 		overall_max = Math.max(...scores[filename], overall_max);
 	}
 
-  console.log(overall_min);
-  console.log(overall_max);
-
 	let num_timestamps = scores[scores_keys[0]].length; // All score arrays should have the same #
 	for (const filename of scores_keys) {
 		// For all timestamps, normalize
@@ -106,7 +103,6 @@ function get_top_ranked_files(final_scores) {
 }
 
 function convert_dist_to_scores(dists) {
-  console.log("CONVERT DISTS TO SCORES");
 	dists = normalize(dists);
 	dists_keys = Object.keys(dists);
 
@@ -134,7 +130,6 @@ function convert_ranked_scores_to_hist(final_scores) {
         }
     }
 
-    console.log(final_scores[key_with_largest_value])
     // Make histogram with final_scores[key_with_largest_value]
 
 }

@@ -76,7 +76,7 @@ def offline_processing_canny_edge_detection(videos, video_to_index, sigma=CANNY_
     # Create edge array of same shape and type as videos, except that it
     # will not maintain channels b/c of the conversion to grayscale during
     # Canny Edge Detection
-    edges = np.zeros(videos.shape[0:videos.ndim - 1], dtype=videos.dtype)
+    edges = np.zeros(videos.shape[0:videos.ndim - 1], dtype=np.int16)
 
     for k, v in video_to_index.items():
         # k: Video Name, v: Index in videos
@@ -118,7 +118,7 @@ def load_canny_edges():
 def load_query_edges(query_path, sigma=CANNY_SIGMA, visualize=False):
     query_frames = glob.glob(f'{query_path}/*.rgb')
     query_frames.sort()
-    query_edges = np.zeros((VIDEO_QUERY_FRAMES, VIDEO_HEIGHT, VIDEO_WIDTH), dtype=np.uint8)
+    query_edges = np.zeros((VIDEO_QUERY_FRAMES, VIDEO_HEIGHT, VIDEO_WIDTH), dtype=np.int16)
     for query_frame_idx, query_frame in enumerate(query_frames):
         with open(query_frame, 'rb') as file:
             r = np.asarray(
@@ -163,8 +163,7 @@ def online_processing(query_path):
         if k not in sw_ranker:
             sw_ranker[k] = []
         for i in range(0, edges[v].shape[0] - sw_size + 1, sw_jump):
-            sw_ranker[k].append(
-                np.linalg.norm(edges[v][i:i + sw_size].astype(np.int16) - query_edges.astype(np.int16)))
+            sw_ranker[k].append(np.linalg.norm(edges[v][i:i + sw_size] - query_edges))
     return sw_ranker
 
 

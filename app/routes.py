@@ -30,6 +30,11 @@ def convert_to_mp4():
         # Get query directory
         filename = request.get_json()['filename']
         file_path = os.path.join(app.root_path, '../data/query', filename)
+
+        # No need to re-run mp4 conversion for the same query
+        if os.path.exists(f'{file_path}/{filename}.mp4'):
+            return jsonify({})
+
         read_video = rgb_to_png.read_video(file_path)
         imageio.mimwrite(f'{file_path}/{filename}NoAudio.mp4', read_video, fps=30)
         video = ffmpeg.input(f'{file_path}/{filename}NoAudio.mp4')
